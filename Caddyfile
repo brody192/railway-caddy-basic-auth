@@ -20,16 +20,19 @@
 		format json # set access log format to json mode
 	}
 
-	# health check
-	respond /health-check 200
+	# perserve ordering of the directives to allow for an un-authenticated health check
+	route {
+		# health check
+		respond /health-check 200
 
-	# use basic auth
-	basic_auth {
-		{$USERNAME} {$PASSWORD_HASH}
-	}
+		# use basic auth
+		basic_auth {
+			{$USERNAME} {$PASSWORD_HASH}
+		}
 
-	# proxy all requests for /* to the set environment variable
-	reverse_proxy {$PROXY_PASS} {
-		header_up Host {upstream_hostport}
+		# proxy all requests for /* to the set environment variable
+		reverse_proxy {$PROXY_PASS} {
+			header_up Host {upstream_hostport}
+		}
 	}
 }
